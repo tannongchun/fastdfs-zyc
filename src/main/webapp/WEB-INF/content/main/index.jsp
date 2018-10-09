@@ -308,7 +308,7 @@
             <div class="navTab-panel tabsPageContent layoutBox">
                 <div class="page unitBox">
                     <div class="accountInfo">
-                        <p><span>欢迎使用fastdfs-zyc监控平台</span></p>
+                        <p><span>欢迎使用分布式文件管理系统监控平台</span></p>
 
                     </div>
                     <div id="containterYdm11" style="margin-left: 300px;margin-top:100px;width: 400px;height: 600px;"></div>
@@ -320,7 +320,7 @@
 
 </div>
 
-<div id="footer">Copyright &copy; 2012-2013 有偿服务请联系: QQ 14776405 定制化开发，公司培训，技术支持</div>
+<div id="footer">Copyright &copy; 2012-2018 分布式文件系统 技术支持</div>
 
 </body>
 </html>

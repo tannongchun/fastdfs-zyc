@@ -17,7 +17,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,8 +41,9 @@ public class MonitorServiceImpl extends BaseService implements MonitorService {
     @Override
     public List<Group> listGroupInfo() throws IOException, MyException,JSchException {
         List<Group> result = new ArrayList<Group>();
+        File file= ResourceUtils.getFile("classpath:./fdfs_client.conf");
         // noinspection ConstantConditions
-        ClientGlobal.init(Tools.getClassPath() + "fdfs_client.conf");
+        ClientGlobal.init(file.getCanonicalPath());
         logger.info("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
         logger.info("charset=" + ClientGlobal.g_charset);
         TrackerClient tracker = new TrackerClient();

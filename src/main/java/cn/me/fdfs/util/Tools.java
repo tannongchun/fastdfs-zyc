@@ -10,6 +10,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.List;
  * Time: 下午3:51
  * To change this template use File | Settings | File Templates.
  */
-public class Tools {
+public final class Tools {
 
     private static final Logger logger = LoggerFactory.getLogger(Tools.class);
     public static List<Machine> machines;
@@ -79,26 +80,29 @@ public class Tools {
         return rootPath;
     }
     public static String getClassPath(){
-        String classPath = Tools.class.getClassLoader().getResource("/").getPath();
-
-        //windows下
-        if("\\".equals(File.separator)){
-
-            classPath = classPath.replace("/", "\\");
+        File file= null;
+        try {
+            // 获取classpath
+            file = ResourceUtils.getFile("classpath:.//");
+            return file.getCanonicalPath();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        //linux下
-        if("/".equals(File.separator)){
-
-            classPath = classPath.replace("\\", "/");
-        }
-        return classPath;
+        return "/";
     }
 
     static {
         SAXReader saxReader = new SAXReader();
         try {
-            System.out.println(Tools.getClassPath());
-            Document document = saxReader.read(Tools.getClassPath() + "config.xml");
+            File file= null;
+            try {
+                file = ResourceUtils.getFile("classpath:./config.xml");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Document document = saxReader.read(file);
             Element root = document.getRootElement();
             machines = new ArrayList<Machine>();
             @SuppressWarnings("unchecked")

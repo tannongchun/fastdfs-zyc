@@ -20,8 +20,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -94,7 +97,9 @@ public class JobServiceImpl extends BaseService implements JobService {
 
         List<Group> result = new ArrayList<Group>();
         // noinspection ConstantConditions
-        ClientGlobal.init(Tools.getClassPath() + "fdfs_client.conf");
+         File file= ResourceUtils.getFile("classpath:./fdfs_client.conf");
+        // 直接操作数据库
+         ClientGlobal.init(file.getCanonicalPath());
         logger.info("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
         logger.info("charset=" + ClientGlobal.g_charset);
         TrackerClient tracker = new TrackerClient();
@@ -114,16 +119,14 @@ public class JobServiceImpl extends BaseService implements JobService {
             BeanUtils.copyProperties(groupStat, group);
             StructStorageStat[] storageStats = tracker.listStorages(
                     trackerServer, groupStat.getGroupName());
+            // 获取统计信息
             for (StructStorageStat storageStat : storageStats) {
-
                 Storage storage = new Storage();
-
                 BeanUtils.copyProperties(storageStat, storage);
                 storage.setId(null);
                 System.out.println("getGroupInfoByMinute: storageId:"+storage.getId());
                 storage.setCurStatus(ProtoCommon
                         .getStorageStatusCaption(storageStat.getStatus()));
-
                 storage.setGroup(group);
                 storage.setGroupName(group.getGroupName());
                 group.getStorageList().add(storage);
@@ -132,14 +135,17 @@ public class JobServiceImpl extends BaseService implements JobService {
         }
 
         Date date = new Date();
+        // 查看
         String cmd = "ps -aux|grep fdfs";
+
         for (Machine machine : Tools.machines) {
             List<String> strList = new ArrayList<String>();
-            if(machine.isConfigType())
+            if(machine.isConfigType()) {
                 strList = Tools.exeRemoteConsole(machine.getIp(),
-                        machine.getUsername(), machine.getPassword(), cmd);
-            else
-                strList = new JsshProxy(machine.getIp(),machine.getUsername(),machine.getPort(),machine.getSsh()).execute(cmd).getExecuteLines();
+                    machine.getUsername(), machine.getPassword(), cmd);
+            } else {
+                strList = new JsshProxy(machine.getIp(), machine.getUsername(), machine.getPort(), machine.getSsh()).execute(cmd).getExecuteLines();
+            }
             for (String str : strList) {
                 if (str.contains("storage.conf")) {
                     for (Group group : result) {

@@ -12,11 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -123,8 +125,9 @@ public class TestModuleAction {
 
     @RequestMapping("/downloadByApi")
     public void downloadByApi(String fieldId,String fileName, HttpServletResponse response) throws IOException, MyException {
-
-        ClientGlobal.init(Tools.getClassPath() + "fdfs_client.conf");
+        // noinspection ConstantConditions
+        File file= ResourceUtils.getFile("classpath:./fdfs_client.conf");
+        ClientGlobal.init(file.getCanonicalPath());
         logger.info("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
         logger.info("charset=" + ClientGlobal.g_charset);
         TrackerClient tracker = new TrackerClient();
@@ -135,13 +138,19 @@ public class TestModuleAction {
 
         StorageClient1 client = new StorageClient1(trackerServer, null);
         byte[] bytes = client.download_file1(fieldId);
-
-        logger.info("length:"+bytes.length);
-
-        response.setHeader("Content-disposition",
-                "attachment; filename="+fileName);
+      if(null == bytes){
+          response.setContentType("text/plain");
+          response.setCharacterEncoding("utf-8");
+          bytes = new String("文件不存在").getBytes();
+      }
+      else{
+          logger.info("length:"+bytes.length);
+          response.setHeader("Content-disposition",
+              "attachment; filename="+fileName);
+      }
         OutputStream os = response.getOutputStream();
         os.write(bytes);
         os.close();
+
     }
 }

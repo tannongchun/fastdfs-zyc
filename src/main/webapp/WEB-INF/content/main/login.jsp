@@ -14,7 +14,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>fastdfs-zyc 分布式监控管理系统</title>
+    <title>fastdfs分布式监控管理系统</title>
     <link href="${basePath }/css/themes/css/login.css" rel="stylesheet" type="text/css" />
 
     <script src="${basePath }/js/speedup.js" type="text/javascript"></script>
@@ -68,7 +68,7 @@
         </div>
     </div>
     <div id="login_footer">
-        Copyright &copy; 2012-2013 有偿服务请联系: QQ 14776405 定制化开发，公司培训，技术支持
+        Copyright &copy 2012-2018 分布式文件系统 技术支持
     </div>
 </div>
 <script>
